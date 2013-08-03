@@ -20,6 +20,7 @@ import java.util.Map;
 public class BarangController {
 
     private Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
+
     private Map<String, Barang> map = new HashMap<String, Barang>();
 
     @ResponseBody
