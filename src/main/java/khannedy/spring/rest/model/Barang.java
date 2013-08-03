@@ -15,6 +15,14 @@ public class Barang {
     private Boolean mudahTerbakar;
     private Date tanggalKadaluarsa;
 
+    public String getKode() {
+        return kode;
+    }
+
+    public void setKode(String kode) {
+        this.kode = kode;
+    }
+
     public String getNama() {
         return nama;
     }
