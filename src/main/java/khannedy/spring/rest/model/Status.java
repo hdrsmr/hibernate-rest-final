@@ -6,7 +6,6 @@ package khannedy.spring.rest.model;
 public class Status {
 
     private String kode;
-
     private String pesan;
 
     public String getKode() {

@@ -7,16 +7,12 @@ import java.util.Date;
  */
 public class Barang {
 
+    private String kode;
     private String nama;
-
     private String kategori;
-
     private Long harga;
-
     private Integer stok;
-
     private Boolean mudahTerbakar;
-
     private Date tanggalKadaluarsa;
 
     public String getNama() {
