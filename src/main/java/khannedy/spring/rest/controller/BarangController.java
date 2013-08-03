@@ -2,6 +2,7 @@ package khannedy.spring.rest.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import khannedy.spring.rest.helper.BasicAuth;
 import khannedy.spring.rest.model.Barang;
 import khannedy.spring.rest.model.Status;
 import org.springframework.stereotype.Controller;
@@ -20,12 +21,19 @@ import java.util.Map;
 public class BarangController {
 
     private Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
-
     private Map<String, Barang> map = new HashMap<String, Barang>();
 
     @ResponseBody
     @RequestMapping(value = "/barang/insert", method = RequestMethod.POST)
     public String insert(HttpServletRequest servletRequest, @RequestBody String json) {
+
+        // check hak akses
+        if (!checkAccess(servletRequest)) {
+            Status status = new Status();
+            status.setKode("408");
+            status.setPesan("Hak akses ditolak");
+            return gson.toJson(status);
+        }
 
         // konversi dari json ke object barang
         Barang barang = gson.fromJson(json, Barang.class);
@@ -47,6 +55,14 @@ public class BarangController {
     public String find(HttpServletRequest servletRequest,
                        @PathVariable("kode") String kode) {
 
+        // check hak akses
+        if (!checkAccess(servletRequest)) {
+            Status status = new Status();
+            status.setKode("408");
+            status.setPesan("Hak akses ditolak");
+            return gson.toJson(status);
+        }
+
         // ambil barang di map
         Barang barang = map.get(kode);
 
@@ -64,6 +80,14 @@ public class BarangController {
     @ResponseBody
     @RequestMapping(value = "/barang/update", method = RequestMethod.PUT)
     public String update(HttpServletRequest servletRequest, @RequestBody String json) {
+
+        // check hak akses
+        if (!checkAccess(servletRequest)) {
+            Status status = new Status();
+            status.setKode("408");
+            status.setPesan("Hak akses ditolak");
+            return gson.toJson(status);
+        }
 
         // konversi dari json ke object barang
         Barang barang = gson.fromJson(json, Barang.class);
@@ -98,6 +122,14 @@ public class BarangController {
     public String delete(HttpServletRequest servletRequest,
                          @PathVariable("kode") String kode) {
 
+        // check hak akses
+        if (!checkAccess(servletRequest)) {
+            Status status = new Status();
+            status.setKode("408");
+            status.setPesan("Hak akses ditolak");
+            return gson.toJson(status);
+        }
+
         // hapus data di map
         Barang barang = map.remove(kode);
 
@@ -125,6 +157,14 @@ public class BarangController {
     @RequestMapping(value = "/barang/findall", method = RequestMethod.GET)
     public String findAll(HttpServletRequest servletRequest) {
 
+        // check hak akses
+        if (!checkAccess(servletRequest)) {
+            Status status = new Status();
+            status.setKode("408");
+            status.setPesan("Hak akses ditolak");
+            return gson.toJson(status);
+        }
+
         // buat data list barang
         List<Barang> list = new ArrayList<Barang>();
 
@@ -133,6 +173,21 @@ public class BarangController {
 
         // return sebagai json
         return gson.toJson(list);
+    }
+
+    public boolean checkAccess(HttpServletRequest servletRequest) {
+
+        // misal username dan password harus ...
+        String username = "eko";
+        String password = "@khannedy";
+
+        // buat object BasicAuth
+        BasicAuth basicAuth = new BasicAuth(servletRequest);
+
+        // check username dan password
+        return username.equals(basicAuth.getUsername()) &&
+                password.equals(basicAuth.getPassword());
+
     }
 
 }
