@@ -5,14 +5,13 @@ import com.google.gson.GsonBuilder;
 import khannedy.spring.rest.helper.BasicAuth;
 import khannedy.spring.rest.model.Barang;
 import khannedy.spring.rest.model.Status;
+import khannedy.spring.rest.service.BarangService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by pakarjava on 8/3/13.
@@ -21,7 +20,8 @@ import java.util.Map;
 public class BarangController {
 
     private Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
-    private Map<String, Barang> map = new HashMap<String, Barang>();
+    @Autowired
+    private BarangService barangService;
 
     @ResponseBody
     @RequestMapping(value = "/barang/insert", method = RequestMethod.POST)
@@ -38,8 +38,8 @@ public class BarangController {
         // konversi dari json ke object barang
         Barang barang = gson.fromJson(json, Barang.class);
 
-        // simpen data barang ke map pake key kode barang
-        map.put(barang.getKode(), barang);
+        // simpen data ke database
+        barangService.insert(barang);
 
         // bikin status sukses
         Status status = new Status();
@@ -64,7 +64,7 @@ public class BarangController {
         }
 
         // ambil barang di map
-        Barang barang = map.get(kode);
+        Barang barang = barangService.find(kode);
 
         // check apa barang ada atau enggak
         if (barang == null) {
@@ -93,10 +93,10 @@ public class BarangController {
         Barang barang = gson.fromJson(json, Barang.class);
 
         // chek apa ada data barang dengan kode yang sama
-        if (map.containsKey(barang.getKode())) {
+        if (barangService.find(barang.getKode()) != null) {
             // kalo ada yang sama
             // update data barang dengan yang baru
-            map.put(barang.getKode(), barang);
+            barangService.update(barang);
 
             // bikin status sukses
             Status status = new Status();
@@ -130,12 +130,8 @@ public class BarangController {
             return gson.toJson(status);
         }
 
-        // hapus data di map
-        Barang barang = map.remove(kode);
-
         // check apa barang ada atau enggak
-        if (barang == null) {
-
+        if (barangService.find(kode) == null) {
             // kalo gak ada, return status gagal
             Status status = new Status();
             status.setKode("404");
@@ -143,6 +139,8 @@ public class BarangController {
             return gson.toJson(status);
 
         } else {
+            // hapus barang
+            barangService.delete(kode);
 
             // kalo gak ada, return status sukses
             Status status = new Status();
@@ -166,10 +164,7 @@ public class BarangController {
         }
 
         // buat data list barang
-        List<Barang> list = new ArrayList<Barang>();
-
-        // tambahin semua data barang dari map
-        list.addAll(map.values());
+        List<Barang> list = barangService.findAll();
 
         // return sebagai json
         return gson.toJson(list);
