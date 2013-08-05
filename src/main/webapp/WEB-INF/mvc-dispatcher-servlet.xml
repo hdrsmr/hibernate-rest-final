@@ -1,14 +1,43 @@
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <context:annotation-config/>
     <mvc:annotation-config/>
 
     <context:component-scan base-package="khannedy.spring.rest"/>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <bean class="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" id="dataSource">
+        <property name="user" value="root"/>
+        <property name="password" value=""/>
+        <property name="databaseName" value="rest_database"/>
+        <property name="serverName" value="localhost"/>
+        <property name="portNumber" value="3306"/>
+    </bean>
+
+    <bean class="org.springframework.orm.hibernate4.HibernateTransactionManager" id="transactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean class="org.springframework.orm.hibernate4.LocalSessionFactoryBean" id="sessionFactory">
+        <property name="packagesToScan" value="khannedy.spring.rest.model"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">true</prop>
+            </props>
+        </property>
+    </bean>
 
 </beans>

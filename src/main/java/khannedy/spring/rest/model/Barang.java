@@ -1,18 +1,28 @@
 package khannedy.spring.rest.model;
 
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Created by pakarjava on 8/3/13.
  */
+@Entity
 public class Barang {
 
+    @Id
     private String kode;
+    @Column
     private String nama;
+    @Column
     private String kategori;
+    @Column
     private Long harga;
+    @Column
     private Integer stok;
+    @Column
     private Boolean mudahTerbakar;
+    @Temporal(TemporalType.DATE)
+    @Column
     private Date tanggalKadaluarsa;
 
     public String getKode() {
